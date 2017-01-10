@@ -113,6 +113,7 @@ To make that middleware executes before serve data, just do the next thing:
 ```
 
 The result is in the following image:
+![middleware test](https://raw.githubusercontent.com/captaincode0/express-session-example/master/assets/middleware-test.jpg)
 
 **Login and logout test**
 
@@ -122,5 +123,5 @@ I did this test with curl and urlencoded data to make post requests, with the de
     user@shell:~curl http://localhost:4444/login -d "email=amy@nasa.gov&pass=mycat1234"
 ```
 
-The results are on the following image
-
+The results are on the following image:
+![login test](https://raw.githubusercontent.com/captaincode0/express-session-example/master/assets/login-test.png)
