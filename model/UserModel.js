@@ -95,6 +95,12 @@ class UserModel extends Model{
 	}
 
 
+	/**
+	 * [getUserByObject get one user by one User object]
+	 * @param  {User}   user     [the user object]
+	 * @param  {Function} callback [the callback to collect the data]
+	 * @return {boolean}            [true if the operatio was succeed | false if the operation failed]
+	 */
 	getUserByObject(user, callback){
 		try{
 			if(user.constructor != User)
@@ -103,18 +109,18 @@ class UserModel extends Model{
 				throw new TypeError("The parameter callback needs to be a function");
 
 			var database = this.dbcontroller.connect();
-			var dbstatement = database.prepare("select * from users where email=$email and pass=$pass limit 1");
+			var dbstatement = database.prepare("select * from users where email=? and pass=? limit 1");
 			
-			dbstatement.run({
-				$email: user.getEmail(),
-				$pass: user.getPass()
-			}, function(error){
-				if(error){
+			dbstatement.bind(user.getEmail(), user.getPass());
+			dbstatement.get(function(error, row){
+				if(error)
 					console.log(error);
-					this.OPERATION_SUCCEED = false;
+				else{
+					if(row)
+						callback(null, row);
+					else
+						callback("[-] Error: The user doesn't exists");
 				}
-				else 
-					this.OPERATION_SUCCEED = true;
 			});
 
 			dbstatement.finalize();

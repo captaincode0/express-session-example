@@ -30,6 +30,11 @@ class User{
 	setPass(pass){
 		this.pass = pass;
 	}
+
+	//@Override
+	toString(){
+		return this.id+"|"+this.email+"|"+this.pass;
+	}
 }
 
 module.exports = User;

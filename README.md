@@ -34,4 +34,6 @@ The database for this little project is really simple, just is one table that st
     insert into users values(null, "john@nasa.gov", "123456");
 ```
 
+##Testing
 
+The application tests was really simple, with curl, firefox trying to do get and post requests at `127.0.0.1:4444`.
