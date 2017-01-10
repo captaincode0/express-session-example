@@ -2,6 +2,7 @@
 
 var User = require("../entities/User");
 var DatabaseController = require("./DatabaseController");
+var Model = require("./Model");
 
 /**
  * the callback of methods needs to be the following
@@ -16,7 +17,7 @@ var DatabaseController = require("./DatabaseController");
  * }
  */
 
-class UserModel{
+class UserModel extends Model{
 	constructor(){
 		this.dbcontroller = new DatabaseController(__dirname+"/usersdb");
 		this.OPERATION_SUCCEED = false;
@@ -90,6 +91,40 @@ class UserModel{
 		}
 		catch(ex){
 			console.log(ex);
+		}
+	}
+
+
+	getUserByObject(user, callback){
+		try{
+			if(user.constructor != User)
+				throw new TypeError("The parameter user needs to be an instance of User class");
+			if(callback.constructor != Function)
+				throw new TypeError("The parameter callback needs to be a function");
+
+			var database = this.dbcontroller.connect();
+			var dbstatement = database.prepare("select * from users where email=$email and pass=$pass limit 1");
+			
+			dbstatement.run({
+				$email: user.getEmail(),
+				$pass: user.getPass()
+			}, function(error){
+				if(error){
+					console.log(error);
+					this.OPERATION_SUCCEED = false;
+				}
+				else 
+					this.OPERATION_SUCCEED = true;
+			});
+
+			dbstatement.finalize();
+			this.dbcontroller.close();
+		}
+		catch(err){
+			console.log(err);
+		}
+		finally{
+			return this.OPERATION_SUCCEED;
 		}
 	}
 
