@@ -1,5 +1,7 @@
 #Express.JS Session Example
 
+![js banner](https://raw.githubusercontent.com/captaincode0/express-session-example/master/assets/banner.jpg)
+
 This litle project was maked with the main idea of test, the middleware in the framework Express.JS, using the following modules, sqlite3, json-parser, body-parser, Router to build a secure login and modules.
 
 ##MVC Pattern Implementation
