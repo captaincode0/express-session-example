@@ -16,6 +16,9 @@ The controller has the following modules:
 1. UserLoginController: controller to auth the user into the application.
 2. UserController: controller to manipulate the UserModel and use its CRUD methods.
 
+**Diagram**
+![mvc pattern](https://raw.githubusercontent.com/captaincode0/express-session-example/master/assets/mvc.jpg)
+
 ##Database
 
 The database for this little project is really simple, just is one table that stores users.
