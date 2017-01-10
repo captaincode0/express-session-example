@@ -5,13 +5,19 @@ var UserModel = require("../model/UserModel");
 var Controller = require("./Controller");
 
 class UserController extends Controller{
-	constructor(model){
-		super(model);
+	constructor(){
+		super(new UserModel());
 	}
 
 	add(user){
 		
 	}
 
+	edit(user){
 
+	}
+
+	del(user){
+		
+	}
 }

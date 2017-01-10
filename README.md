@@ -4,6 +4,50 @@
 
 This litle project was maked with the main idea of test, the middleware in the framework Express.JS, using the following modules, sqlite3, json-parser, body-parser, Router to build a secure login and modules.
 
+##Project structure
+- assets
+- controllers
+    + Controller.js
+    + UserController.js
+    + UserLoginController.js
+- entities
+    + User.js
+- model
+    + usersdb.sql
+    + usersdb
+    + DatabaseController.js
+    + Model.js
+    + UserModel.js
+- routes
+    + middleware
+        * auth-middleware.js
+    + index.js
+    + userpanel-adminusers.js
+    + userpanel.js
+- .gitignore
+- README.md
+- package.json
+- server.js
+
+##Run the project
+
+```bash
+    user@shell:~node server.js
+```
+
+##Routes
+
+- /:home page
+    + /about [get]
+    + /contact [get]
+    + /login [get]
+    + /login [post]
+- /userpanel: user administrative section [this sections uses the middleware to access into restricted zone]
+    + /profile [get]
+    + /stats [get]
+    + /galery [get]
+    + /logout [get]
+
 ##MVC Pattern Implementation
 
 The model has the following modules:
@@ -39,3 +83,44 @@ The database for this little project is really simple, just is one table that st
 ##Testing
 
 The application tests was really simple, with curl, firefox trying to do get and post requests at `127.0.0.1:4444`.
+
+Test list:
+- Middleware test.
+- Login and logout test.
+
+**Middleware test**
+
+The middleware in auth.js check if the session is active. and then pass to the next route, but in other case send one message that says forbidden.
+
+```javascript
+    //auth.js
+    var auth = function(req, res, next){
+        if(req.session.userlogged)
+            next();
+        else
+            res.status(403).send("Forbidden");
+    }
+
+    module.exports = auth;
+```
+
+To make that middleware executes before serve data, just do the next thing:
+
+```javascript
+    router.get("/private", middleware_callback, function(req, res){
+        //do something after middleware execution
+    });
+```
+
+The result is in the following image:
+
+**Login and logout test**
+
+I did this test with curl and urlencoded data to make post requests, with the default user `amy@nasa.gov:mycat1234`
+
+```bash
+    user@shell:~curl http://localhost:4444/login -d "email=amy@nasa.gov&pass=mycat1234"
+```
+
+The results are on the following image
+

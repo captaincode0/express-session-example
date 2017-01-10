@@ -1,8 +1,9 @@
 "use strict"
 
 var User = require("../entities/User");
-var DatabaseController = require("./DatabaseController");
 var Model = require("./Model");
+var DatabaseController = require("./DatabaseController");
+
 
 /**
  * the callback of methods needs to be the following
@@ -19,8 +20,8 @@ var Model = require("./Model");
 
 class UserModel extends Model{
 	constructor(){
+		super();
 		this.dbcontroller = new DatabaseController(__dirname+"/usersdb");
-		this.OPERATION_SUCCEED = false;
 	}
 
 	/**
@@ -39,7 +40,7 @@ class UserModel extends Model{
 			//retrieve data from database
 			database.all("select * from users", function(error, rows){
 				if(error)
-					console.log(error);
+					console.log("[-] "+error);
 				else{
 					if(rows)
 						callback(null, rows);
@@ -78,12 +79,12 @@ class UserModel extends Model{
 			//invoke get function to retrieve the first column
 			dbstatement.get(function(error, row){
 				if(error)
-					console.log(error);
+					console.log("[-] "+error);
 				else{
 					if(row)
 						callback(null, row);
 					else
-						callback("[-] Error: The user doesn't exists");
+						callback("[-] Error: The user doesn't exists, dump: ["+userid+"]");
 				}
 			});
 			dbstatement.finalize();
@@ -99,7 +100,7 @@ class UserModel extends Model{
 	 * [getUserByObject get one user by one User object]
 	 * @param  {User}   user     [the user object]
 	 * @param  {Function} callback [the callback to collect the data]
-	 * @return {boolean}            [true if the operatio was succeed | false if the operation failed]
+	 * @return {void}
 	 */
 	getUserByObject(user, callback){
 		try{
@@ -114,12 +115,12 @@ class UserModel extends Model{
 			dbstatement.bind(user.getEmail(), user.getPass());
 			dbstatement.get(function(error, row){
 				if(error)
-					console.log(error);
+					console.log("[-] "+error);
 				else{
 					if(row)
 						callback(null, row);
 					else
-						callback("[-] Error: The user doesn't exists");
+						callback("[-] Error: The user doesn't exists, dump: ["+user+"]");
 				}
 			});
 
@@ -129,35 +130,36 @@ class UserModel extends Model{
 		catch(err){
 			console.log(err);
 		}
-		finally{
-			return this.OPERATION_SUCCEED;
-		}
 	}
 
 	/**
 	 * [insertUser inserts the user into database]
 	 * @param  {User} user [user instance]
+	 * @param  {Function} callback [a callback for pass the message]
 	 * @return {boolean}      [true: if the user was added correctly | false: if the user wasn't added correctly]
 	 */
-	insertUser(user){
+	insertUser(user, callback){
 		try{
 			if(user.constructor != User)
 				throw new TypeError("The parameter user needs to be an instance of User");
+			if(callback.constructor != Function)
+				throw new TypeError("The parameter callback needs to be a function");
 
 			var database = this.dbcontroller.connect();
 			var dbstatement = database.prepare("insert into users values($id,$email,$pass)");
-		
+			var that = this;
+
+
 			dbstatement.run({
 				$id: user.getId(),
 				$email: user.getEmail(),
 				$pass: user.getPass()
 			}, function(error){
 				if(error){
-					console.log(error);
-					this.OPERATION_SUCCEED = false;	
+					console.log("[-] "+error);
 				}
 				else
-					this.OPERATION_SUCCEED = true;
+					callback("[+] The user was inserted correctly on the database, dump: ["+user+"]");
 			});
 
 			dbstatement.finalize();
@@ -166,20 +168,20 @@ class UserModel extends Model{
 		catch(ex){
 			console.log(ex);
 		}
-		finally{
-			return this.OPERATION_SUCCEED;
-		}		
 	}
 
 	/**
 	 * [updateUser updates the user given one user instance]
 	 * @param  {User} user [user instance]
+	 * @param  {Function} callback [one callback to pass the message]
 	 * @return {boolean}      [true: operation executed rightly | false: operation executed badly]
 	 */
-	updateUser(user){
+	updateUser(user, callback){
 		try{
 			if(user.constructor != User)
 				throw new TypeError("The parameter user needs to be an instance of User");
+			if(callback.constructor != Function)
+				throw new TypeError("The parameter callback needs to be a function");
 
 			var database = this.dbcontroller.connect();
 			var dbstatement = database.prepare("update users set email=$email, pass=$pass where id=$id");
@@ -188,12 +190,10 @@ class UserModel extends Model{
 				$email: user.getEmail(),
 				$pass: user.getPass()
 			}, function(error){
-				if(error){
+				if(error)
 					console.log("[-]"+error);
-					this.OPERATION_SUCCEED = false;
-				}
 				else
-					this.OPERATION_SUCCEED = true;
+					callback("[+] The user was correctly updated, dump: ["+user+"]");
 			});
 
 			dbstatement.finalize();
@@ -203,16 +203,17 @@ class UserModel extends Model{
 			console.log(ex);
 		}
 		finally{
-			return this.OPERATION_SUCCEED;
+			return ;
 		}
 	}
 
 	/**
 	 * [deleteUser deletes one user from database given one user id]
 	 * @param  {Integer} userid [number that represents the user identifier]
+	 * @param  {Function} callback [one callback to pass the message]
 	 * @return {boolean}        [true: operation was completed succesfuly | false: operation bad executed]
 	 */
-	deleteUser(userid){
+	deleteUser(userid, callback){
 		try{
 			if(typeof userid != "number")
 				throw new TypeError("The parameter user needs to be an instance of User");
@@ -222,12 +223,10 @@ class UserModel extends Model{
 			dbstatement.run({
 				$id: userid
 			}, function(error){
-				if(error){
-					console.log(error);
-					this.OPERATION_SUCCEED = false;
-				}
+				if(error)
+					console.log("[-] "+error);
 				else
-					this.OPERATION_SUCCEED = true;
+					callback("[+] The user was correctly deleted, dump: ["+userid+"]");
 			});
 
 			dbstatement.finalize();
@@ -237,7 +236,7 @@ class UserModel extends Model{
 			console.log(ex);
 		}
 		finally{
-			return this.OPERATION_SUCCEED;
+			return ;
 		}
 	}
 }
